@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pages", "Pages\Pages.csproj", "{F03688AB-F905-43F1-A311-C036355ECDC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagesTest", "PagesTest\PagesTest\PagesTest.csproj", "{0FF32541-E5D0-4943-85BC-F4CB65A7EFFA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F03688AB-F905-43F1-A311-C036355ECDC8} = {F03688AB-F905-43F1-A311-C036355ECDC8}
+	EndProjectSection
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "PagesTestContent", "PagesTest\PagesTestContent\PagesTestContent.contentproj", "{259F332E-427F-4D9C-AFE6-EC953227C85F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Windows Phone = Debug|Windows Phone
+		Release|Windows Phone = Release|Windows Phone
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F03688AB-F905-43F1-A311-C036355ECDC8}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{F03688AB-F905-43F1-A311-C036355ECDC8}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
+		{F03688AB-F905-43F1-A311-C036355ECDC8}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+		{F03688AB-F905-43F1-A311-C036355ECDC8}.Release|Windows Phone.Build.0 = Release|Windows Phone
+		{0FF32541-E5D0-4943-85BC-F4CB65A7EFFA}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{0FF32541-E5D0-4943-85BC-F4CB65A7EFFA}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
+		{0FF32541-E5D0-4943-85BC-F4CB65A7EFFA}.Debug|Windows Phone.Deploy.0 = Debug|Windows Phone
+		{0FF32541-E5D0-4943-85BC-F4CB65A7EFFA}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+		{0FF32541-E5D0-4943-85BC-F4CB65A7EFFA}.Release|Windows Phone.Build.0 = Release|Windows Phone
+		{0FF32541-E5D0-4943-85BC-F4CB65A7EFFA}.Release|Windows Phone.Deploy.0 = Release|Windows Phone
+		{259F332E-427F-4D9C-AFE6-EC953227C85F}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{259F332E-427F-4D9C-AFE6-EC953227C85F}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
