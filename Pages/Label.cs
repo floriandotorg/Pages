@@ -24,10 +24,7 @@ namespace Pages
 
         public string Text
         {
-            get
-            {
-                return _text;
-            }
+            get { return _text; }
             set
             {
                 _text = value;
@@ -40,13 +37,23 @@ namespace Pages
 
         public SpriteFont Font
         {
-            get
-            {
-                return _font;
-            }
+            get { return _font; }
             set
             {
                 _font = value;
+                if (AutoResize)
+                {
+                    autoResize();
+                }
+            }
+        }
+
+        public override Viewport Viewport
+        {
+            get { return base.Viewport; }
+            set
+            {
+                base.Viewport = value;
                 if (AutoResize)
                 {
                     autoResize();
@@ -59,8 +66,11 @@ namespace Pages
             if (Font != null && Text != null)
             {
                 Vector2 fontSize = Font.MeasureString(Text);
-                Viewport.Height = Convert.ToInt32(fontSize.Y);
-                Viewport.Width = Convert.ToInt32(fontSize.X);
+
+                Viewport viewport = Viewport;
+                viewport.Height = Convert.ToInt32(fontSize.Y);
+                viewport.Width = Convert.ToInt32(fontSize.X);
+                base.Viewport = viewport;
             }   
         }
 

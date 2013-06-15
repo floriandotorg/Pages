@@ -40,9 +40,10 @@ namespace PagesTest
 
             _button.Text = "Button";
             _button.Font = Load<SpriteFont>("TestFont");
-            _button.Viewport.Y = 200;
-            _button.Viewport.Height = 200;
-            _button.Viewport.Width = 200;
+            _button.AutoResize = false;
+            _button.Y = 200;
+            _button.Height = 200;
+            _button.Width = 200;
             _button.Tap += _button_Tap;
         }
 

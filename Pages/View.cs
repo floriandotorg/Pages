@@ -14,8 +14,65 @@ namespace Pages
 {
     public class View
     {
-        public Viewport Viewport;
         public NavigationController NavigationController;
+
+        public virtual Viewport Viewport { get; set; }
+
+        public int Height
+        {
+            get
+            {
+                return Viewport.Height;
+            }
+            set
+            {
+                Viewport viewport = Viewport;
+                viewport.Height = value;
+                Viewport = viewport;
+            }
+        }
+
+        public int Width
+        {
+            get
+            {
+                return Viewport.Width;
+            }
+            set
+            {
+                Viewport viewport = Viewport;
+                viewport.Width = value;
+                Viewport = viewport;
+            }
+        }
+
+        public int X
+        {
+            get
+            {
+                return Viewport.X;
+            }
+            set
+            {
+                Viewport viewport = Viewport;
+                viewport.X = value;
+                Viewport = viewport;
+            }
+        }
+
+        public int Y
+        {
+            get
+            {
+                return Viewport.Y;
+            }
+            set
+            {
+                Viewport viewport = Viewport;
+                viewport.Y = value;
+                Viewport = viewport;
+            }
+        }
 
         public SpriteBatch SpriteBatch
         {
@@ -106,8 +163,8 @@ namespace Pages
 
         public void CenterView(View view, int yOffset)
         {
-            view.Viewport.X = (Viewport.Width - view.Viewport.Width) / 2;
-            view.Viewport.Y = (Viewport.Height - view.Viewport.Height) / 2 + yOffset;
+            view.X = (Viewport.Width - view.Viewport.Width) / 2;
+            view.Y = (Viewport.Height - view.Viewport.Height) / 2 + yOffset;
         }
     }
 }
