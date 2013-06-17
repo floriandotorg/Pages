@@ -16,7 +16,6 @@ namespace Pages
     {
         public int Pos;
         public Color Color;
-        public Color BackgroundColor;
         public bool AutoResize;
 
         private string _text;
@@ -83,12 +82,10 @@ namespace Pages
             BackgroundColor = Color.Black;
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, FadeInfo fadeInfo)
         {
-            NavigationController.SpriteBatch.Draw(Load<Texture2D>("Rectangle"), Viewport.Bounds, BackgroundColor);
-
             Vector2 position = new Vector2((Viewport.Width - Font.MeasureString(Text).X) / 2, (Viewport.Height - Font.MeasureString(Text).Y) / 2);
-            SpriteBatch.DrawString(Font, Text, ConvertPoint(position), Color /** fadeProcess*/);
+            SpriteBatch.DrawString(Font, Text, ConvertPoint(position), Color * (float)fadeInfo.Value.Value);
         }
     }
 }

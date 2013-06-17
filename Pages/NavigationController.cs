@@ -14,6 +14,8 @@ namespace Pages
 {
     public class NavigationController
     {
+        private const int NumFadingUpdates = 10;
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private ContentManager _contentManager;
@@ -21,6 +23,8 @@ namespace Pages
         private bool _touching = false;
         private Stack<View> _navigationStack;
         private Dictionary<String, Object> _assetDictionary;
+        private FadeInfo _fadeInfo;
+        private View _navigateView;
 
         public GraphicsDeviceManager Graphics
         {
@@ -47,14 +51,11 @@ namespace Pages
         {
             _navigationStack = new Stack<View>();
             _assetDictionary = new Dictionary<String, Object>();
-
+            _fadeInfo = new FadeInfo() { State = FadingState.FadeIn, Value = new SineValue(1, NumFadingUpdates) };
 
             _navigationStack.Push(rootView);
 
-            rootView.Viewport = _graphics.GraphicsDevice.Viewport;
-            rootView.NavigationController = this;
-
-            rootView.Initialize();
+            InitializeView(rootView);
         }
 
         virtual public void LoadContent(SpriteBatch spriteBatch, ContentManager contentManager)
@@ -94,21 +95,83 @@ namespace Pages
             }
         }
 
+        public void Back()
+        {
+            if (_fadeInfo.State == FadingState.Viewing)
+            {
+                _fadeInfo.State = FadingState.FadeOut;
+                _fadeInfo.Value.Reverse();
+                _navigateView = null;
+            }
+        }
+
+        private void InitializeView(View view)
+        {
+            view.Viewport = _graphics.GraphicsDevice.Viewport;
+            view.NavigationController = this;
+
+            view.Initialize();
+        }
+
+        public void Navigate(View view)
+        {
+            if (_fadeInfo.State != FadingState.FadeOut)
+            {
+                while (!_fadeInfo.Value.Inc());
+
+                _fadeInfo.State = FadingState.FadeOut;
+                _fadeInfo.Value.Reverse();
+
+                InitializeView(view);
+                view.LoadContent();
+
+                _navigateView = view;
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
         virtual public bool Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             {
-                _navigationStack.Pop();
-
-                if (_navigationStack.Count == 0)
-                {
-                    return false;
-                }
+                Back();
             }
 
             HandleTouches();
 
-            return _navigationStack.Peek().Update(gameTime);
+            if (_fadeInfo.State == FadingState.FadeIn && _fadeInfo.Value.Inc())
+            {
+                _fadeInfo.State = FadingState.Viewing;
+            }
+            else if (_fadeInfo.State == FadingState.FadeOut && _fadeInfo.Value.Dec())
+            {
+                if (_navigateView == null)
+                {
+                    _navigationStack.Pop();
+
+                    if (_navigationStack.Count == 0)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    _navigationStack.Peek().PrepareForNavigation(_navigateView);
+                    _navigationStack.Push(_navigateView);
+
+                    _fadeInfo.State = FadingState.FadeIn;
+                    _fadeInfo.Value.Reverse();
+                    _navigateView = null;
+                }
+
+                _fadeInfo.State = FadingState.FadeIn;
+                _fadeInfo.Value.Reverse();
+            }
+
+            return _navigationStack.Peek().Update(gameTime, _fadeInfo);
         }
 
         virtual public Color ClearColor
@@ -123,7 +186,7 @@ namespace Pages
         {
             _spriteBatch.Begin();
 
-            _navigationStack.Peek().Draw(gameTime);
+            _navigationStack.Peek().Draw(gameTime, _fadeInfo);
 
             _spriteBatch.End();
         }

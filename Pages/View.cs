@@ -15,6 +15,7 @@ namespace Pages
     public class View
     {
         public NavigationController NavigationController;
+        public Color BackgroundColor;
 
         public virtual Viewport Viewport { get; set; }
 
@@ -100,6 +101,7 @@ namespace Pages
         public virtual void Initialize()
         {
             _subviews = new List<View>();
+            BackgroundColor = Color.Transparent;
         }
 
         public virtual void LoadContent()
@@ -110,11 +112,11 @@ namespace Pages
             }
         }
 
-        public virtual bool Update(GameTime gameTime)
+        public virtual bool Update(GameTime gameTime, FadeInfo fadeInfo)
         {
             foreach (View subview in _subviews)
             {
-                if (!subview.Update(gameTime))
+                if (!subview.Update(gameTime, fadeInfo))
                 {
                     return false;
                 }
@@ -123,11 +125,16 @@ namespace Pages
             return true;
         }
 
-        public virtual void Draw(GameTime gameTime)
+        virtual public void PrepareForNavigation(View destination)
+        { }
+
+        public virtual void Draw(GameTime gameTime, FadeInfo fadeInfo)
         {
+            SpriteBatch.Draw(Load<Texture2D>("Rectangle"), Viewport.Bounds, BackgroundColor * (float)fadeInfo.Value.Value);
+
             foreach (View subview in _subviews)
             {
-                subview.Draw(gameTime);
+                subview.Draw(gameTime, fadeInfo);
             }
         }
 
@@ -152,7 +159,7 @@ namespace Pages
         {
             get
             {
-                return Color.CornflowerBlue;
+                return Color.Black;
             }
         }
 

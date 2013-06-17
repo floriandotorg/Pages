@@ -13,7 +13,7 @@ using Pages;
 
 namespace PagesTest
 {
-    class MenuView : View
+    public class InfoView : View
     {
         private Label _label;
         private Button _button;
@@ -33,12 +33,12 @@ namespace PagesTest
         {
             base.LoadContent();
 
-            _label.Text = "Hallo Welt";
+            _label.Text = "Info Page";
             _label.Font = Load<SpriteFont>("TestFont");
             _label.BackgroundColor = Color.Black * 0;
             CenterView(_label, -200);
 
-            _button.Text = "Next Page";
+            _button.Text = "Back";
             _button.Font = Load<SpriteFont>("TestFont");
             _button.AutoResize = false;
             _button.Y = 200;
@@ -49,7 +49,7 @@ namespace PagesTest
 
         void _button_Tap(object sender)
         {
-            NavigationController.Navigate(new InfoView());
+            NavigationController.Back();
         }
 
         public override bool Update(GameTime gameTime, FadeInfo fadeInfo)
