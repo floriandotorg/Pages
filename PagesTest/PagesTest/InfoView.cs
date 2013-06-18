@@ -49,22 +49,7 @@ namespace PagesTest
 
         void _button_Tap(object sender)
         {
-            NavigationController.Back();
-        }
-
-        public override bool Update(GameTime gameTime, FadeInfo fadeInfo)
-        {
-            if (!base.Update(gameTime, fadeInfo))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public override void Draw(GameTime gameTime, FadeInfo fadeInfo)
-        {
-            base.Draw(gameTime, fadeInfo);
+            NavigationController.Back(false);
         }
     }
 }

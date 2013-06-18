@@ -19,5 +19,10 @@ namespace Pages
         {
             return new Point(Convert.ToInt32(vector.X), Convert.ToInt32(vector.Y));
         }
+
+        public static Vector2 PointToVector2(Point point)
+        {
+            return new Vector2(Convert.ToSingle(point.X), Convert.ToSingle(point.Y));
+        }
     }
 }

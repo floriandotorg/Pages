@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Button.cs" />
-    <Compile Include="FadeInfo.cs" />
+    <Compile Include="AnimationInfo.cs" />
     <Compile Include="Label.cs" />
     <Compile Include="NavigationController.cs" />
     <Compile Include="SineValue.cs" />

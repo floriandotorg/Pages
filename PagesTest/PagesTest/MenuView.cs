@@ -16,7 +16,7 @@ namespace PagesTest
     class MenuView : View
     {
         private Label _label;
-        private Button _button, _overlayButton;
+        private Button _nextPageAnimatedButton, _nextPageButton, _overlayButton;
 
         public override void Initialize()
         {
@@ -25,8 +25,11 @@ namespace PagesTest
             _label = new Label();
             AddSubview(_label);
 
-            _button = new Button();
-            AddSubview(_button);
+            _nextPageAnimatedButton = new Button();
+            AddSubview(_nextPageAnimatedButton);
+
+            _nextPageButton = new Button();
+            AddSubview(_nextPageButton);
 
             _overlayButton = new Button();
             AddSubview(_overlayButton);
@@ -41,14 +44,25 @@ namespace PagesTest
             _label.BackgroundColor = Color.Black * 0;
             CenterSubview(_label, -100);
 
-            _button.Text = "Next Page";
-            _button.Font = Load<SpriteFont>("TestFont");
-            _button.AutoResize = false;
-            _button.Y = 200;
-            _button.X = 200;
-            _button.Height = 200;
-            _button.Width = 200;
-            _button.Tap += _button_Tap;
+            _nextPageAnimatedButton.Text = "Next Page Animated";
+            _nextPageAnimatedButton.Font = Load<SpriteFont>("TestFont");
+            _nextPageAnimatedButton.AutoResize = false;
+            _nextPageAnimatedButton.Y = 200;
+            _nextPageAnimatedButton.X = 200;
+            _nextPageAnimatedButton.Height = 50;
+            _nextPageAnimatedButton.Width = 200;
+            _nextPageAnimatedButton.BackgroundColor = Color.Red;
+            _nextPageAnimatedButton.Tap += nextPageAnimated;
+
+            _nextPageButton.Text = "Next Page";
+            _nextPageButton.Font = Load<SpriteFont>("TestFont");
+            _nextPageButton.AutoResize = false;
+            _nextPageButton.Y = 260;
+            _nextPageButton.X = 200;
+            _nextPageButton.Height = 50;
+            _nextPageButton.Width = 200;
+            _nextPageButton.BackgroundColor = Color.Green;
+            _nextPageButton.Tap += nextPage;
 
             _overlayButton.Text = "Overlay";
             _overlayButton.Font = Load<SpriteFont>("TestFont");
@@ -57,32 +71,23 @@ namespace PagesTest
             _overlayButton.X = 400;
             _overlayButton.Height = 200;
             _overlayButton.Width = 200;
+            _overlayButton.BackgroundColor = Color.Blue;
             _overlayButton.Tap += showOveray;
         }
 
-        void _button_Tap(object sender)
+        void nextPageAnimated(object sender)
         {
-            NavigationController.Navigate(new InfoView());
+            NavigationController.Navigate(new InfoView(), true);
+        }
+
+        void nextPage(object sender)
+        {
+            NavigationController.Navigate(new InfoView(), false);
         }
 
         void showOveray(object sender)
         {
-            Overlay(new Overlay());
-        }
-
-        public override bool Update(GameTime gameTime, FadeInfo fadeInfo)
-        {
-            if (!base.Update(gameTime, fadeInfo))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public override void Draw(GameTime gameTime, FadeInfo fadeInfo)
-        {
-            base.Draw(gameTime, fadeInfo);
+            Overlay(new Overlay(), true);
         }
     }
 }

@@ -12,9 +12,24 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Pages
 {
+    public enum HorizontalAlignment
+    {
+        Left,
+        Center,
+        Right
+    }
+
+    public enum VerticalAlignment
+    {
+        Top,
+        Center,
+        Bottom
+    }
+
     public class Label : View
     {
-        public int Pos;
+        public HorizontalAlignment HorizontalAlignment;
+        public VerticalAlignment VerticalAlignment;
         public Color Color;
         public bool AutoResize;
 
@@ -75,17 +90,42 @@ namespace Pages
 
         public override void LoadContent()
         {
+            base.LoadContent();
+
+            VerticalAlignment = VerticalAlignment.Center;
+            HorizontalAlignment = HorizontalAlignment.Center;
             AutoResize = true;
             Text = "";
-            Pos = 0;
             Color = Color.White;
-            BackgroundColor = Color.Black;
         }
 
-        public override void Draw(GameTime gameTime, FadeInfo fadeInfo)
+        public override void Draw(GameTime gameTime, AnimationInfo animationInfo)
         {
-            Vector2 position = new Vector2((Viewport.Width - Font.MeasureString(Text).X) / 2, (Viewport.Height - Font.MeasureString(Text).Y) / 2);
-            SpriteBatch.DrawString(Font, Text, PointToSystem(position), Color * fadeInfo.Value);
+            base.Draw(gameTime, animationInfo);
+            
+            Vector2 textSize = Font.MeasureString(Text);
+
+            Vector2 position = new Vector2(0, 0);
+
+            if (HorizontalAlignment == HorizontalAlignment.Center)
+            {
+                position.X = (Viewport.Width - textSize.X) / 2;
+            }
+            else if (HorizontalAlignment == HorizontalAlignment.Right)
+            {
+                position.X = Viewport.Width - textSize.X;
+            }
+
+            if (VerticalAlignment == VerticalAlignment.Center)
+            {
+                position.Y = (Viewport.Height - textSize.Y) / 2;
+            }
+            else if (VerticalAlignment == VerticalAlignment.Bottom)
+            {
+                position.Y = Viewport.Height - textSize.Y;
+            }
+
+            SpriteBatch.DrawString(Font, Text, Vector2ToSystem(position), Color * animationInfo.Value);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace PagesTest
 
         void _button_Tap(object sender)
         {
-            Dismiss();
+            Dismiss(true);
         }
     }
 }

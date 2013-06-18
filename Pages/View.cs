@@ -18,6 +18,8 @@ namespace Pages
         public Color BackgroundColor;
         public View Superview;
 
+        #region Properties
+
         public virtual Viewport Viewport { get; set; }
 
         public int Height
@@ -76,6 +78,10 @@ namespace Pages
             }
         }
 
+        #endregion
+
+        #region NavigationController
+
         public SpriteBatch SpriteBatch
         {
             get
@@ -89,22 +95,13 @@ namespace Pages
             return NavigationController.Load<T>(assetName);
         }
 
+        #endregion
+
         private List<View> _subviews;
         private View _overlay;
+        private AnimationInfo _overlayAnimationInfo;
 
-        private void InitializeView(View view)
-        {
-            view.Viewport = Viewport;
-            view.NavigationController = NavigationController;
-            view.Superview = this;
-            view.Initialize();
-        }
-
-        public void AddSubview(View view)
-        {
-            InitializeView(view);
-            _subviews.Add(view);
-        }
+        #region Game Interface
 
         public virtual void Initialize()
         {
@@ -120,11 +117,11 @@ namespace Pages
             }
         }
 
-        public virtual bool Update(GameTime gameTime, FadeInfo fadeInfo)
+        public virtual bool Update(GameTime gameTime, AnimationInfo animationInfo)
         {
             foreach (View subview in _subviews)
             {
-                if (!subview.Update(gameTime, fadeInfo))
+                if (!subview.Update(gameTime, animationInfo))
                 {
                     return false;
                 }
@@ -132,7 +129,16 @@ namespace Pages
 
             if (_overlay != null)
             {
-                if (!_overlay.Update(gameTime, fadeInfo))
+                if (_overlayAnimationInfo.State == AnimationState.FadeIn && _overlayAnimationInfo.Value.Inc())
+                {
+                    _overlayAnimationInfo.State = AnimationState.Visible;
+                }
+                else if (_overlayAnimationInfo.State == AnimationState.FadeOut && _overlayAnimationInfo.Value.Dec())
+                {
+                    DismissOverlay(false);
+                }
+
+                if (_overlay != null && !_overlay.Update(gameTime, _overlayAnimationInfo))
                 {
                     return false;
                 }
@@ -141,33 +147,69 @@ namespace Pages
             return true;
         }
 
-        virtual public void PrepareForNavigation(View destination)
-        { }
-
-        public virtual void Draw(GameTime gameTime, FadeInfo fadeInfo)
+        public virtual void Draw(GameTime gameTime, AnimationInfo animationInfo)
         {
-            SpriteBatch.Draw(Load<Texture2D>("Rectangle"), Viewport.Bounds, BackgroundColor * fadeInfo.Value);
+            Rectangle viewportBounds = Viewport.Bounds;
+
+            if (Superview != null)
+            {
+                viewportBounds = Superview.RectangleToSystem(viewportBounds);
+            }
+
+            SpriteBatch.Draw(Load<Texture2D>("Rectangle"), viewportBounds, BackgroundColor * animationInfo.Value);
 
             foreach (View subview in _subviews)
             {
-                subview.Draw(gameTime, fadeInfo);
+                subview.Draw(gameTime, animationInfo);
             }
 
             if (_overlay != null)
             {
-                _overlay.Draw(gameTime, fadeInfo);
+                _overlay.Draw(gameTime, _overlayAnimationInfo);
             }
         }
 
+        virtual public void PrepareForNavigation(View destination)
+        { }
+
+        public virtual void PrepareForOverlay(View overlay)
+        { }
+
+        virtual public Color ClearColor
+        {
+            get
+            {
+                return Color.Black;
+            }
+        }
+
+        #endregion
+
+        #region Subviews
+
+        public void AddSubview(View view)
+        {
+            InitializeView(view);
+            _subviews.Add(view);
+        }
+
+        public void CenterSubview(View view, int yOffset)
+        {
+            view.X = (Viewport.Width - view.Viewport.Width) / 2;
+            view.Y = (Viewport.Height - view.Viewport.Height) / 2 + yOffset;
+        }
+
+        #endregion
+
+        #region Touch
+
         public virtual bool TouchInside(TouchLocation location)
         {
-            //System.Diagnostics.Debug.WriteLine("TouchInside " + location.Position + " " + PointToLocale(location.Position) + " " + Viewport.Bounds + " " + Viewport.Bounds.Contains(Utility.Vector2ToPoint(PointToLocale(location.Position))));
-
             Vector2 locale = location.Position;
 
             if (Superview != null)
             {
-                locale = Superview.PointToLocale(locale);
+                locale = Superview.Vector2ToLocale(locale);
             }
 
             return Viewport.Bounds.Contains(Utility.Vector2ToPoint(locale)); 
@@ -182,7 +224,7 @@ namespace Pages
             else
             {
                 foreach (View subview in _subviews)
-                {
+                {   
                     if (subview.TouchInside(location))
                     {
                         subview.TouchDown(location);
@@ -192,21 +234,17 @@ namespace Pages
             }
         }
 
-        virtual public Color ClearColor
-        {
-            get
-            {
-                return Color.Black;
-            }
-        }
+        #endregion
 
-        public Vector2 PointToSystem(Vector2 vector)
+        #region Coordinate Conversation
+
+        public Vector2 Vector2ToSystem(Vector2 vector)
         {
             Vector2 converted = new Vector2(Viewport.X + vector.X, Viewport.Y + vector.Y);
 
             if (Superview != null)
             {
-                return Superview.PointToSystem(converted);
+                return Superview.Vector2ToSystem(converted);
             }
             else
             {
@@ -214,13 +252,13 @@ namespace Pages
             }
         }
 
-        public Vector2 PointToLocale(Vector2 vector)
+        public Vector2 Vector2ToLocale(Vector2 vector)
         {
             Vector2 converted = new Vector2(vector.X - Viewport.X, vector.Y - Viewport.Y);
 
             if (Superview != null)
             {
-                return Superview.PointToLocale(converted);
+                return Superview.Vector2ToLocale(converted);
             }
             else
             {
@@ -228,38 +266,94 @@ namespace Pages
             }
         }
 
-        public void CenterSubview(View view, int yOffset)
+        public Point PointToSystem(Point point)
         {
-            view.X = (Viewport.Width - view.Viewport.Width) / 2;
-            view.Y = (Viewport.Height - view.Viewport.Height) / 2 + yOffset;
+            return Utility.Vector2ToPoint(Vector2ToSystem(Utility.PointToVector2(point)));
         }
 
-        public virtual void PrepareForOverlay(View overlay)
-        { }
+        public Point PointToLocale(Point point)
+        {
+            return Utility.Vector2ToPoint(Vector2ToLocale(Utility.PointToVector2(point)));
+        }
 
-        public void Overlay(View overlay)
+        public Rectangle RectangleToSystem(Rectangle rectangle)
+        {
+            Point topLeft = PointToSystem(rectangle.Location);
+            return new Rectangle(topLeft.X, topLeft.Y, rectangle.Width, rectangle.Height);
+        }
+
+        public Rectangle RectangleToLocale(Rectangle rectangle)
+        {
+            Point topLeft = PointToLocale(rectangle.Location);
+            return new Rectangle(topLeft.X, topLeft.Y, rectangle.Width, rectangle.Height);
+        }
+
+        #endregion
+
+        #region Overlay
+
+        public void Overlay(View overlay, bool animated)
         {
             InitializeView(overlay);
             overlay.LoadContent();
             PrepareForOverlay(_overlay);
             _overlay = overlay;
+
+            if (animated)
+            {
+                _overlayAnimationInfo = new AnimationInfo();
+            }
+            else
+            {
+                _overlayAnimationInfo = new AnimationInfo();
+                _overlayAnimationInfo.Visible();
+            }
         }
 
-        private void DismissOverlay()
+        private void DismissOverlay(bool animated)
         {
-            _overlay = null;
+            if (animated)
+            {
+                if (_overlayAnimationInfo.State == AnimationState.Visible)
+                {
+                    _overlayAnimationInfo.FadeOut();
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
+            else
+            {
+                _overlay = null;
+                _overlayAnimationInfo = null;
+            }
         }
 
-        public void Dismiss()
+        public void Dismiss(bool animated)
         {
             if (Superview != null)
             {
-                Superview.DismissOverlay();
+                Superview.DismissOverlay(animated);
             }
             else
             {
                 throw new InvalidOperationException();
             }
         }
+
+        #endregion
+
+        #region Helper
+
+        private void InitializeView(View view)
+        {
+            view.Viewport = Viewport;
+            view.NavigationController = NavigationController;
+            view.Superview = this;
+            view.Initialize();
+        }
+
+        #endregion
     }
 }

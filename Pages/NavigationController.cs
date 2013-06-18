@@ -14,8 +14,6 @@ namespace Pages
 {
     public class NavigationController
     {
-        private const int NumFadingUpdates = 10;
-
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private ContentManager _contentManager;
@@ -23,9 +21,11 @@ namespace Pages
         private bool _touching = false;
         private Stack<View> _navigationStack;
         private Dictionary<String, Object> _assetDictionary;
-        private FadeInfo _fadeInfo;
+        private AnimationInfo _animationInfo;
         private View _navigateView;
 
+        #region Properties
+        
         public GraphicsDeviceManager Graphics
         {
             get
@@ -42,6 +42,10 @@ namespace Pages
             }
         }
 
+        #endregion
+
+        #region Game Interface
+
         public NavigationController(GraphicsDeviceManager graphics)
         {
             _graphics = graphics;
@@ -51,7 +55,7 @@ namespace Pages
         {
             _navigationStack = new Stack<View>();
             _assetDictionary = new Dictionary<String, Object>();
-            _fadeInfo = new FadeInfo() { State = FadingState.FadeIn, Value = new SineValue(1, NumFadingUpdates) };
+            _animationInfo = new AnimationInfo();
 
             _navigationStack.Push(rootView);
 
@@ -75,6 +79,120 @@ namespace Pages
 
         }
 
+        virtual public bool Update(GameTime gameTime)
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            {
+                Back(true);
+            }
+
+            HandleTouches();
+
+            if (_animationInfo.State == AnimationState.FadeIn && _animationInfo.Value.Inc())
+            {
+                _animationInfo.State = AnimationState.Visible;
+            }
+            else if (_animationInfo.State == AnimationState.FadeOut && _animationInfo.Value.Dec())
+            {
+                if (_navigateView == null)
+                {
+                    _navigationStack.Pop();
+                }
+                else
+                {
+                    doNavigate();
+                }
+
+                _animationInfo.FadeIn();
+            }
+
+            if (_navigationStack.Count != 0)
+            {
+                return _navigationStack.Peek().Update(gameTime, _animationInfo);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        virtual public Color ClearColor
+        {
+            get
+            {
+                return _navigationStack.Peek().ClearColor;
+            }
+        }
+
+        virtual public void Draw(GameTime gameTime)
+        {
+            _spriteBatch.Begin();
+
+            _navigationStack.Peek().Draw(gameTime, _animationInfo);
+
+            _spriteBatch.End();
+        }
+
+        #endregion
+
+        #region Navigation
+
+        public void Back(bool animated)
+        {
+            if (_animationInfo.State == AnimationState.Visible)
+            {
+                _animationInfo.FadeOut();
+                _navigateView = null;
+
+                if (!animated)
+                {
+                    _animationInfo.Visible();
+                    _navigationStack.Pop();
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
+        public void Navigate(View view, bool animated)
+        {
+            if (_animationInfo.State != AnimationState.FadeOut)
+            {
+                while (!_animationInfo.Value.Inc()) ;
+
+                InitializeView(view);
+                view.LoadContent();
+                _navigateView = view;
+
+                if (animated)
+                {
+                    _animationInfo.FadeOut();
+                }
+                else
+                {
+                    _animationInfo.State = AnimationState.Visible;
+                    doNavigate();
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
+        private void doNavigate()
+        {
+            _navigationStack.Peek().PrepareForNavigation(_navigateView);
+            _navigationStack.Push(_navigateView);
+            _navigateView = null;
+        }
+
+        #endregion
+
+        #region Helper
+
         private void HandleTouches()
         {
             TouchCollection touches = TouchPanel.GetState();
@@ -87,25 +205,11 @@ namespace Pages
                 {
                     _navigationStack.Peek().TouchDown(touches.First());
                 }
-                
+
             }
             else if (touches.Count == 0)
             {
                 _touching = false;
-            }
-        }
-
-        public void Back()
-        {
-            if (_fadeInfo.State == FadingState.Viewing)
-            {
-                _fadeInfo.State = FadingState.FadeOut;
-                _fadeInfo.Value.Reverse();
-                _navigateView = null;
-            }
-            else
-            {
-                throw new InvalidOperationException();
             }
         }
 
@@ -117,81 +221,6 @@ namespace Pages
             view.Initialize();
         }
 
-        public void Navigate(View view)
-        {
-            if (_fadeInfo.State != FadingState.FadeOut)
-            {
-                while (!_fadeInfo.Value.Inc());
-
-                _fadeInfo.State = FadingState.FadeOut;
-                _fadeInfo.Value.Reverse();
-
-                InitializeView(view);
-                view.LoadContent();
-
-                _navigateView = view;
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
-        virtual public bool Update(GameTime gameTime)
-        {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-            {
-                Back();
-            }
-
-            HandleTouches();
-
-            if (_fadeInfo.State == FadingState.FadeIn && _fadeInfo.Value.Inc())
-            {
-                _fadeInfo.State = FadingState.Viewing;
-            }
-            else if (_fadeInfo.State == FadingState.FadeOut && _fadeInfo.Value.Dec())
-            {
-                if (_navigateView == null)
-                {
-                    _navigationStack.Pop();
-
-                    if (_navigationStack.Count == 0)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    _navigationStack.Peek().PrepareForNavigation(_navigateView);
-                    _navigationStack.Push(_navigateView);
-                    _navigateView = null;
-                }
-
-                _fadeInfo.State = FadingState.FadeIn;
-                _fadeInfo.Value.Reverse();
-            }
-
-            return _navigationStack.Peek().Update(gameTime, _fadeInfo);
-        }
-
-        virtual public Color ClearColor
-        {
-            get 
-            {
-                return _navigationStack.Peek().ClearColor;
-            }
-        }
-
-        virtual public void Draw(GameTime gameTime)
-        {
-            _spriteBatch.Begin();
-
-            _navigationStack.Peek().Draw(gameTime, _fadeInfo);
-
-            _spriteBatch.End();
-        }
-
         public T Load<T>(String assetName)
         {
             if (!_assetDictionary.Keys.Contains(assetName))
@@ -201,5 +230,7 @@ namespace Pages
 
             return (T)_assetDictionary[assetName];
         }
+
+        #endregion
     }
 }

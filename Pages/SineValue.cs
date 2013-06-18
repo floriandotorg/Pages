@@ -5,6 +5,12 @@ using System.Text;
 
 namespace Pages
 {
+    public enum ProessMode
+    {
+        SteepBeginSoftEnd, // Sin
+        SoftBeginSteepEnd  // Cos
+    }
+
     public class SineValue
     {
         public static implicit operator float(SineValue sineValue)
@@ -17,16 +23,32 @@ namespace Pages
             return sineValue.Value;
         }
 
+        public ProessMode Mode
+        {
+            get
+            {
+                return _mode;
+            }
+            set
+            {
+                double backup = Value;
+                _mode = value;
+                Value = backup;
+            }
+        }
+
         private double _max;
         private double _sineValue;
         private double _inc;
-        private bool _reserve = false;
+        private ProessMode _mode;
+
+        private const double PI_2 = Math.PI / 2.0;
 
         public double Value
         {
             get
             {
-                if (_reserve)
+                if (Mode == ProessMode.SoftBeginSteepEnd)
                 {
                     return _max * (1 - Math.Cos(_sineValue));
                 }
@@ -38,7 +60,7 @@ namespace Pages
 
             set
             {
-                if (_reserve)
+                if (Mode == ProessMode.SoftBeginSteepEnd)
                 {
                     _sineValue = Math.Acos(1 - value / _max);
                 }
@@ -53,7 +75,7 @@ namespace Pages
         {
             get
             {
-                return _sineValue >= Math.PI / 2.0;
+                return _sineValue >= PI_2;
             }
         }
 
@@ -68,13 +90,14 @@ namespace Pages
         public SineValue(double max, int steps)
         {
             _max = max;
-            _inc = (Math.PI / 2.0) / (double)steps;
+            _inc = PI_2 / (double)steps;
             _sineValue = 0;
+            Mode = ProessMode.SteepBeginSoftEnd;
         }
 
         public bool Inc()
         {
-            _sineValue = Math.Min(_sineValue + _inc, Math.PI / 2.0);
+            _sineValue = Math.Min(_sineValue + _inc, PI_2);
             return IsMax;
         }
 
@@ -84,11 +107,22 @@ namespace Pages
             return IsMin;
         }
 
-        public void Reverse()
+        public void setMax()
         {
-            double value = Value;
-            _reserve = !_reserve;
-            Value = value;
+            _sineValue = PI_2;
+        }
+
+        public void setMin()
+        {
+            _sineValue = 0;
+        }
+
+        public double Linear
+        {
+            get
+            {
+                return _sineValue / PI_2;
+            }
         }
     }
 }
