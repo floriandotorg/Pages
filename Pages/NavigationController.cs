@@ -103,6 +103,10 @@ namespace Pages
                 _fadeInfo.Value.Reverse();
                 _navigateView = null;
             }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         private void InitializeView(View view)
@@ -161,9 +165,6 @@ namespace Pages
                 {
                     _navigationStack.Peek().PrepareForNavigation(_navigateView);
                     _navigationStack.Push(_navigateView);
-
-                    _fadeInfo.State = FadingState.FadeIn;
-                    _fadeInfo.Value.Reverse();
                     _navigateView = null;
                 }
 

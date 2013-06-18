@@ -130,7 +130,7 @@ namespace Pages
 
         public virtual void Draw(GameTime gameTime, FadeInfo fadeInfo)
         {
-            SpriteBatch.Draw(Load<Texture2D>("Rectangle"), Viewport.Bounds, BackgroundColor * (float)fadeInfo.Value.Value);
+            SpriteBatch.Draw(Load<Texture2D>("Rectangle"), Viewport.Bounds, BackgroundColor * fadeInfo.Value);
 
             foreach (View subview in _subviews)
             {

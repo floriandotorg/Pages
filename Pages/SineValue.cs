@@ -7,6 +7,16 @@ namespace Pages
 {
     public class SineValue
     {
+        public static implicit operator float(SineValue sineValue)
+        {
+            return (float)sineValue.Value;
+        }
+
+        public static implicit operator double(SineValue sineValue)
+        {
+            return sineValue.Value;
+        }
+
         private double _max;
         private double _sineValue;
         private double _inc;

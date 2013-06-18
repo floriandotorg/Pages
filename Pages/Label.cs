@@ -85,7 +85,7 @@ namespace Pages
         public override void Draw(GameTime gameTime, FadeInfo fadeInfo)
         {
             Vector2 position = new Vector2((Viewport.Width - Font.MeasureString(Text).X) / 2, (Viewport.Height - Font.MeasureString(Text).Y) / 2);
-            SpriteBatch.DrawString(Font, Text, ConvertPoint(position), Color * (float)fadeInfo.Value.Value);
+            SpriteBatch.DrawString(Font, Text, ConvertPoint(position), Color * fadeInfo.Value);
         }
     }
 }
