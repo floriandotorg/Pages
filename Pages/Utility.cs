@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Pages
 {
-    class Utility
+    public class Utility
     {
         public static Point Vector2ToPoint(Vector2 vector)
         {

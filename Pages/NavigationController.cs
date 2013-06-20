@@ -24,6 +24,15 @@ namespace Pages
         private AnimationInfo _animationInfo;
         private View _navigateView;
 
+        private struct Timer
+        {
+            public TimeSpan Time;
+            public Action Action;
+        }
+
+        private TimeSpan _totalGameTime;
+        private List<Timer> _timerList;
+
         #region Properties
         
         public GraphicsDeviceManager Graphics
@@ -56,10 +65,11 @@ namespace Pages
             _navigationStack = new Stack<View>();
             _assetDictionary = new Dictionary<String, Object>();
             _animationInfo = new AnimationInfo();
+            _timerList = new List<Timer>();
 
             _navigationStack.Push(rootView);
 
-            InitializeView(rootView);
+           initializeView(rootView);
         }
 
         virtual public void LoadContent(SpriteBatch spriteBatch, ContentManager contentManager)
@@ -81,12 +91,21 @@ namespace Pages
 
         virtual public bool Update(GameTime gameTime)
         {
+            if (gameTime.IsRunningSlowly)
+            {
+                System.Diagnostics.Debug.WriteLine("Warning: gameTime is running slowly!");
+            }
+
+            _totalGameTime = gameTime.TotalGameTime;
+
+            handleTimer();
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             {
                 Back(true);
             }
 
-            HandleTouches();
+            handleTouches();
 
             if (_animationInfo.State == AnimationState.FadeIn && _animationInfo.Value.Inc())
             {
@@ -135,6 +154,24 @@ namespace Pages
 
         #endregion
 
+        #region Timer
+
+        private void handleTimer()
+        {
+            foreach (Timer timer in _timerList.Where(x => _totalGameTime >= x.Time).ToArray())
+            {
+                timer.Action();
+                _timerList.Remove(timer);
+            }
+        }
+
+        public void PerformActionAfterDelay(Action action, TimeSpan delay)
+        {
+            _timerList.Add(new Timer() { Action = action, Time = _totalGameTime.Add(delay) });
+        }
+
+        #endregion
+
         #region Navigation
 
         public void Back(bool animated)
@@ -162,7 +199,7 @@ namespace Pages
             {
                 while (!_animationInfo.Value.Inc()) ;
 
-                InitializeView(view);
+                initializeView(view);
                 view.LoadContent();
                 _navigateView = view;
 
@@ -193,7 +230,7 @@ namespace Pages
 
         #region Helper
 
-        private void HandleTouches()
+        private void handleTouches()
         {
             TouchCollection touches = TouchPanel.GetState();
 
@@ -213,7 +250,7 @@ namespace Pages
             }
         }
 
-        private void InitializeView(View view)
+        private void initializeView(View view)
         {
             view.Viewport = _graphics.GraphicsDevice.Viewport;
             view.NavigationController = this;

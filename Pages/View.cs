@@ -135,7 +135,7 @@ namespace Pages
                 }
                 else if (_overlayAnimationInfo.State == AnimationState.FadeOut && _overlayAnimationInfo.Value.Dec())
                 {
-                    DismissOverlay(false);
+                    dismissOverlay(false);
                 }
 
                 if (_overlay != null && !_overlay.Update(gameTime, _overlayAnimationInfo))
@@ -145,6 +145,13 @@ namespace Pages
             }
 
             return true;
+        }
+
+        protected void DrawLine(SpriteBatch batch, float width, Color color, Vector2 point1, Vector2 point2)
+        {
+            float angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+            float length = Vector2.Distance(point1, point2);
+            batch.Draw(Load<Texture2D>("Rectangle"), point1, null, color, angle, Vector2.Zero, new Vector2(length, width), SpriteEffects.None, 0);
         }
 
         public virtual void Draw(GameTime gameTime, AnimationInfo animationInfo)
@@ -189,7 +196,7 @@ namespace Pages
 
         public void AddSubview(View view)
         {
-            InitializeView(view);
+            initializeView(view);
             _subviews.Add(view);
         }
 
@@ -294,7 +301,7 @@ namespace Pages
 
         public void Overlay(View overlay, bool animated)
         {
-            InitializeView(overlay);
+            initializeView(overlay);
             overlay.LoadContent();
             PrepareForOverlay(_overlay);
             _overlay = overlay;
@@ -310,7 +317,7 @@ namespace Pages
             }
         }
 
-        private void DismissOverlay(bool animated)
+        private void dismissOverlay(bool animated)
         {
             if (animated)
             {
@@ -334,7 +341,7 @@ namespace Pages
         {
             if (Superview != null)
             {
-                Superview.DismissOverlay(animated);
+                Superview.dismissOverlay(animated);
             }
             else
             {
@@ -346,7 +353,7 @@ namespace Pages
 
         #region Helper
 
-        private void InitializeView(View view)
+        private void initializeView(View view)
         {
             view.Viewport = Viewport;
             view.NavigationController = NavigationController;

@@ -17,6 +17,7 @@ namespace PagesTest
     {
         private Label _label;
         private Button _nextPageAnimatedButton, _nextPageButton, _overlayButton;
+        private ProgressBar _progressBar;
 
         public override void Initialize()
         {
@@ -33,6 +34,9 @@ namespace PagesTest
 
             _overlayButton = new Button();
             AddSubview(_overlayButton);
+
+            _progressBar = new ProgressBar();
+            AddSubview(_progressBar);
         }
 
         public override void LoadContent()
@@ -73,6 +77,27 @@ namespace PagesTest
             _overlayButton.Width = 200;
             _overlayButton.BackgroundColor = Color.Blue;
             _overlayButton.Tap += showOveray;
+
+            _progressBar.Y = 100;
+            _progressBar.X = 100;
+            _progressBar.Height = 20;
+            _progressBar.Width = 100;
+
+            updateProgressBar();
+        }
+
+        void updateProgressBar()
+        {
+            if (_progressBar.Progress >= 1f)
+            {
+                _progressBar.Progress = 0f;
+            }
+            else
+            {
+                _progressBar.Progress = _progressBar.Progress + .1f;
+            }
+            
+            NavigationController.PerformActionAfterDelay(updateProgressBar, TimeSpan.FromMilliseconds(500));
         }
 
         void nextPageAnimated(object sender)
