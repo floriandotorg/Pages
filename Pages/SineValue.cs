@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Pages
 {
-    public enum ProessMode
+    public enum ProgressMode
     {
         SteepBeginSoftEnd, // Sin
         SoftBeginSteepEnd  // Cos
@@ -23,7 +23,7 @@ namespace Pages
             return sineValue.Value;
         }
 
-        public ProessMode Mode
+        public ProgressMode Mode
         {
             get
             {
@@ -40,7 +40,7 @@ namespace Pages
         private double _max;
         private double _sineValue;
         private double _inc;
-        private ProessMode _mode;
+        private ProgressMode _mode;
 
         private const double PI_2 = Math.PI / 2.0;
 
@@ -48,7 +48,7 @@ namespace Pages
         {
             get
             {
-                if (Mode == ProessMode.SoftBeginSteepEnd)
+                if (Mode == ProgressMode.SoftBeginSteepEnd)
                 {
                     return _max * (1 - Math.Cos(_sineValue));
                 }
@@ -60,7 +60,7 @@ namespace Pages
 
             set
             {
-                if (Mode == ProessMode.SoftBeginSteepEnd)
+                if (Mode == ProgressMode.SoftBeginSteepEnd)
                 {
                     _sineValue = Math.Acos(1 - value / _max);
                 }
@@ -92,7 +92,7 @@ namespace Pages
             _max = max;
             _inc = PI_2 / (double)steps;
             _sineValue = 0;
-            Mode = ProessMode.SteepBeginSoftEnd;
+            Mode = ProgressMode.SteepBeginSoftEnd;
         }
 
         public bool Inc()

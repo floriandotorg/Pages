@@ -42,6 +42,7 @@ namespace Pages
         public override void Draw(GameTime gameTime, AnimationInfo animationInfo)
         {
             base.Draw(gameTime, animationInfo);
+
             int width = Convert.ToInt32(Convert.ToSingle(Viewport.Width) * Progress);
             SpriteBatch.Draw(Load<Texture2D>("Rectangle"), RectangleToSystem(new Rectangle(0, 0, width, Viewport.Height)), BarColor * animationInfo.Value);
         }

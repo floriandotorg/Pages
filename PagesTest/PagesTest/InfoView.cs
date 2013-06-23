@@ -33,18 +33,25 @@ namespace PagesTest
         {
             base.LoadContent();
 
+            _label.BackgroundColor = Color.Black * 0;
             _label.Text = "Info Page";
             _label.Font = Load<SpriteFont>("TestFont");
-            _label.BackgroundColor = Color.Black * 0;
-            CenterSubview(_label, -200);
 
             _button.Text = "Back";
             _button.Font = Load<SpriteFont>("TestFont");
             _button.AutoResize = false;
+            _button.Tap += _button_Tap;
+        }
+
+        public override void LayoutSubviews()
+        {
+            base.LayoutSubviews();
+
+            CenterSubview(_label, -200);
+
             _button.Y = 200;
             _button.Height = 200;
             _button.Width = 200;
-            _button.Tap += _button_Tap;
         }
 
         void _button_Tap(object sender)

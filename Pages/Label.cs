@@ -42,10 +42,7 @@ namespace Pages
             set
             {
                 _text = value;
-                if (AutoResize)
-                {
-                    autoResize();
-                }
+                LayoutSubviews();
             }
         }
 
@@ -55,37 +52,20 @@ namespace Pages
             set
             {
                 _font = value;
-                if (AutoResize)
-                {
-                    autoResize();
-                }
+                LayoutSubviews();
             }
         }
 
-        public override Viewport Viewport
+        public override void LayoutSubviews()
         {
-            get { return base.Viewport; }
-            set
-            {
-                base.Viewport = value;
-                if (AutoResize)
-                {
-                    autoResize();
-                }
-            }
-        }
+            base.LayoutSubviews();
 
-        private void autoResize()
-        {
-            if (Font != null && Text != null)
+            if (AutoResize && Font != null && Text != null)
             {
                 Vector2 fontSize = Font.MeasureString(Text);
-
-                Viewport viewport = Viewport;
-                viewport.Height = Convert.ToInt32(fontSize.Y);
-                viewport.Width = Convert.ToInt32(fontSize.X);
-                base.Viewport = viewport;
-            }   
+                Height = Convert.ToInt32(fontSize.Y);
+                Width = Convert.ToInt32(fontSize.X);
+            }
         }
 
         public override void LoadContent()

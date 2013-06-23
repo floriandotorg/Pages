@@ -46,44 +46,53 @@ namespace PagesTest
             _label.Text = "Hallo Welt";
             _label.Font = Load<SpriteFont>("TestFont");
             _label.BackgroundColor = Color.Black * 0;
-            CenterSubview(_label, -100);
 
             _nextPageAnimatedButton.Text = "Next Page Animated";
             _nextPageAnimatedButton.Font = Load<SpriteFont>("TestFont");
             _nextPageAnimatedButton.AutoResize = false;
-            _nextPageAnimatedButton.Y = 200;
-            _nextPageAnimatedButton.X = 200;
-            _nextPageAnimatedButton.Height = 50;
-            _nextPageAnimatedButton.Width = 200;
             _nextPageAnimatedButton.BackgroundColor = Color.Red;
             _nextPageAnimatedButton.Tap += nextPageAnimated;
 
             _nextPageButton.Text = "Next Page";
             _nextPageButton.Font = Load<SpriteFont>("TestFont");
             _nextPageButton.AutoResize = false;
-            _nextPageButton.Y = 260;
-            _nextPageButton.X = 200;
-            _nextPageButton.Height = 50;
-            _nextPageButton.Width = 200;
             _nextPageButton.BackgroundColor = Color.Green;
             _nextPageButton.Tap += nextPage;
 
             _overlayButton.Text = "Overlay";
             _overlayButton.Font = Load<SpriteFont>("TestFont");
             _overlayButton.AutoResize = false;
+            _overlayButton.BackgroundColor = Color.Blue;
+            _overlayButton.Tap += showOveray;
+
+            updateProgressBar();
+        }
+
+        public override void LayoutSubviews()
+        {
+            base.LayoutSubviews();
+
+            CenterSubview(_label, -100);
+
+            _nextPageAnimatedButton.Y = 200;
+            _nextPageAnimatedButton.X = 200;
+            _nextPageAnimatedButton.Height = 50;
+            _nextPageAnimatedButton.Width = 200;
+
+            _nextPageButton.Y = 260;
+            _nextPageButton.X = 200;
+            _nextPageButton.Height = 50;
+            _nextPageButton.Width = 200;
+
             _overlayButton.Y = 200;
             _overlayButton.X = 400;
             _overlayButton.Height = 200;
             _overlayButton.Width = 200;
-            _overlayButton.BackgroundColor = Color.Blue;
-            _overlayButton.Tap += showOveray;
 
             _progressBar.Y = 100;
             _progressBar.X = 100;
             _progressBar.Height = 20;
             _progressBar.Width = 100;
-
-            updateProgressBar();
         }
 
         void updateProgressBar()

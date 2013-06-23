@@ -18,9 +18,23 @@ namespace Pages
         public Color BackgroundColor;
         public View Superview;
 
+        private Viewport _viewport;
+        private bool _needsRelayout;
+
         #region Properties
 
-        public virtual Viewport Viewport { get; set; }
+        public virtual Viewport Viewport
+        {
+            get
+            {
+                return _viewport;
+            }
+            set
+            {
+                _viewport = value;
+                NeedsRelayout = true;
+            }
+        }
 
         public int Height
         {
@@ -78,6 +92,31 @@ namespace Pages
             }
         }
 
+        public bool NeedsRelayout
+        {
+            get
+            {
+                foreach (View subview in _subviews)
+                {
+                    if (subview.NeedsRelayout)
+                    {
+                        return true;
+                    }
+                }
+
+                if (_overlay != null && _overlay.NeedsRelayout)
+                {
+                    return true;
+                }
+
+                return _needsRelayout;
+            }
+            set
+            {
+                _needsRelayout = value;
+            }
+        }
+
         #endregion
 
         #region NavigationController
@@ -107,6 +146,7 @@ namespace Pages
         {
             _subviews = new List<View>();
             BackgroundColor = Color.Transparent;
+            NeedsRelayout = true;
         }
 
         public virtual void LoadContent()
@@ -116,6 +156,32 @@ namespace Pages
                 subview.LoadContent();
             }
         }
+
+        public void Relayout()
+        {
+            if (_needsRelayout)
+            {
+                LayoutSubviews();
+            }
+
+            foreach (View subview in _subviews)
+            {
+                if (subview.NeedsRelayout)
+                {
+                    subview.Relayout();
+                }
+            }
+
+            if (_overlay != null && _overlay.NeedsRelayout)
+            {
+                _overlay.Relayout();
+            }
+
+            NeedsRelayout = false;
+        }
+
+        public virtual void LayoutSubviews()
+        { }
 
         public virtual bool Update(GameTime gameTime, AnimationInfo animationInfo)
         {
@@ -176,13 +242,10 @@ namespace Pages
             }
         }
 
-        virtual public void PrepareForNavigation(View destination)
+        public virtual void OverlayDimissed(View overlay)
         { }
 
-        public virtual void PrepareForOverlay(View overlay)
-        { }
-
-        virtual public Color ClearColor
+        public virtual Color ClearColor
         {
             get
             {
@@ -303,7 +366,6 @@ namespace Pages
         {
             initializeView(overlay);
             overlay.LoadContent();
-            PrepareForOverlay(_overlay);
             _overlay = overlay;
 
             if (animated)
@@ -332,6 +394,7 @@ namespace Pages
             }
             else
             {
+                OverlayDimissed(_overlay);
                 _overlay = null;
                 _overlayAnimationInfo = null;
             }
