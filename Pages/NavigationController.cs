@@ -125,14 +125,17 @@ namespace Pages
                 _animationInfo.FadeIn();
             }
 
-            if (_navigationStack.Peek().NeedsRelayout)
-            {
-                _navigationStack.Peek().Relayout();
-            }
 
             if (_navigationStack.Count != 0)
             {
-                return _navigationStack.Peek().Update(gameTime, _animationInfo);
+                bool result = _navigationStack.Peek().Update(gameTime, _animationInfo);
+
+                if (_navigationStack.Peek().NeedsRelayout)
+                {
+                    _navigationStack.Peek().Relayout();
+                }
+
+                return result;
             }
             else
             {

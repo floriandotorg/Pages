@@ -134,6 +134,11 @@ namespace Pages
             return NavigationController.Load<T>(assetName);
         }
 
+        public void PerformActionAfterDelay(Action action, TimeSpan delay)
+        {
+            NavigationController.PerformActionAfterDelay(action, delay);
+        }
+
         #endregion
 
         private List<View> _subviews;
