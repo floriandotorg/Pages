@@ -17,11 +17,14 @@ namespace Pages
         public delegate void TapHandler(object sender);
         public event TapHandler Tap;
 
-        public override void TouchDown(TouchLocation location)
+        public override bool TouchDown(TouchLocation location)
         {
- 	        base.TouchDown(location);
+            if (!base.TouchDown(location))
+            {
+                Tap(this);
+            }
 
-            Tap(this);
+            return true;
         }
     }
 }

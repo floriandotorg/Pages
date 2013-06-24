@@ -290,23 +290,22 @@ namespace Pages
             return Viewport.Bounds.Contains(Utility.Vector2ToPoint(locale)); 
         }
 
-        public virtual void TouchDown(TouchLocation location)
+        public virtual bool TouchDown(TouchLocation location)
         {
-            if (_overlay != null && _overlay.TouchInside(location))
+            if (_overlay != null && _overlay.TouchInside(location) && _overlay.TouchDown(location))
             {
-                _overlay.TouchDown(location);
+                return true;
             }
-            else
+            
+            foreach (View subview in _subviews)
             {
-                foreach (View subview in _subviews)
-                {   
-                    if (subview.TouchInside(location))
-                    {
-                        subview.TouchDown(location);
-                        break;
-                    }
+                if (subview.TouchInside(location) && subview.TouchDown(location))
+                {
+                    return true;
                 }
             }
+
+            return false;
         }
 
         #endregion
