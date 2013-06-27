@@ -18,7 +18,7 @@ namespace Pages
         private SpriteBatch _spriteBatch;
         private ContentManager _contentManager;
 
-        private bool _touching = false;
+        private bool _touching = false, _exit = false;
         private Stack<View> _navigationStack;
         private Dictionary<String, Object> _assetDictionary;
         private AnimationInfo _animationInfo;
@@ -86,7 +86,11 @@ namespace Pages
 
         virtual public void UnloadContent()
         {
-
+            do
+            {
+                _navigationStack.Peek().UnloadContent();
+            }
+            while (_navigationStack.Pop() != null);
         }
 
         virtual public bool Update(GameTime gameTime)
@@ -102,7 +106,10 @@ namespace Pages
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             {
-                Back(true);
+                if (!_navigationStack.Peek().BackButtonPressed())
+                {
+                    Back(true);
+                }
             }
 
             handleTouches();
@@ -125,22 +132,26 @@ namespace Pages
                 _animationInfo.FadeIn();
             }
 
-
             if (_navigationStack.Count != 0)
             {
-                bool result = _navigationStack.Peek().Update(gameTime, _animationInfo);
+                _navigationStack.Peek().Update(gameTime, _animationInfo);
 
                 if (_navigationStack.Peek().NeedsRelayout)
                 {
                     _navigationStack.Peek().Relayout();
                 }
-
-                return result;
             }
             else
             {
-                return false;
+                Exit();
             }
+
+            return !_exit;
+        }
+
+        public void Exit()
+        {
+            _exit = true;
         }
 
         virtual public Color ClearColor
@@ -155,7 +166,7 @@ namespace Pages
         {
             _spriteBatch.Begin();
 
-            _navigationStack.Peek().Draw(gameTime, _animationInfo);
+            _navigationStack.Peek().Redraw(gameTime, _animationInfo);
 
             _spriteBatch.End();
         }
@@ -205,7 +216,7 @@ namespace Pages
         {
             if (_animationInfo.State != AnimationState.FadeOut)
             {
-                while (!_animationInfo.Value.Inc()) ;
+                _animationInfo.Value.setMax();
 
                 initializeView(view);
                 view.LoadContent();

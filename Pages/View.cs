@@ -16,7 +16,9 @@ namespace Pages
     {
         public NavigationController NavigationController;
         public Color BackgroundColor;
+        public Texture2D BackgroundTexture;
         public View Superview;
+        public bool Visible;
 
         private Viewport _viewport;
         private bool _needsRelayout;
@@ -117,6 +119,14 @@ namespace Pages
             }
         }
 
+        public View Overlay
+        {
+            get
+            {
+                return _overlay;
+            }
+        }
+
         #endregion
 
         #region NavigationController
@@ -139,6 +149,11 @@ namespace Pages
             NavigationController.PerformActionAfterDelay(action, delay);
         }
 
+        public void Exit()
+        {
+            NavigationController.Exit();
+        }
+
         #endregion
 
         private List<View> _subviews;
@@ -152,13 +167,29 @@ namespace Pages
             _subviews = new List<View>();
             BackgroundColor = Color.Transparent;
             NeedsRelayout = true;
+            Visible = true;
         }
 
         public virtual void LoadContent()
         {
+            BackgroundTexture = Load<Texture2D>("Rectangle");
+
             foreach (View subview in _subviews)
             {
                 subview.LoadContent();
+            }
+        }
+
+        public virtual void UnloadContent()
+        {
+            if (_overlay != null)
+            {
+                _overlay.UnloadContent();
+            }
+
+            foreach (View subview in _subviews)
+            {
+                subview.UnloadContent();
             }
         }
 
@@ -188,14 +219,11 @@ namespace Pages
         public virtual void LayoutSubviews()
         { }
 
-        public virtual bool Update(GameTime gameTime, AnimationInfo animationInfo)
+        public virtual void Update(GameTime gameTime, AnimationInfo animationInfo)
         {
             foreach (View subview in _subviews)
             {
-                if (!subview.Update(gameTime, animationInfo))
-                {
-                    return false;
-                }
+                subview.Update(gameTime, animationInfo);
             }
 
             if (_overlay != null)
@@ -206,16 +234,21 @@ namespace Pages
                 }
                 else if (_overlayAnimationInfo.State == AnimationState.FadeOut && _overlayAnimationInfo.Value.Dec())
                 {
-                    dismissOverlay(false);
+                    doDismissOverlay();
                 }
 
-                if (_overlay != null && !_overlay.Update(gameTime, _overlayAnimationInfo))
+                if (_overlay != null)
                 {
-                    return false;
+                    AnimationInfo overlayAnimationInfo = _overlayAnimationInfo;
+
+                    if (animationInfo.State != AnimationState.Visible)
+                    {
+                        overlayAnimationInfo = animationInfo;
+                    }
+
+                    _overlay.Update(gameTime, overlayAnimationInfo);
                 }
             }
-
-            return true;
         }
 
         protected void DrawLine(SpriteBatch batch, float width, Color color, Vector2 point1, Vector2 point2)
@@ -223,6 +256,31 @@ namespace Pages
             float angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
             float length = Vector2.Distance(point1, point2);
             batch.Draw(Load<Texture2D>("Rectangle"), point1, null, color, angle, Vector2.Zero, new Vector2(length, width), SpriteEffects.None, 0);
+        }
+
+        public void Redraw(GameTime gameTime, AnimationInfo animationInfo)
+        {
+            if (Visible)
+            {
+                Draw(gameTime, animationInfo);
+
+                foreach (View subview in _subviews)
+                {
+                    subview.Redraw(gameTime, animationInfo);
+                }
+
+                if (_overlay != null)
+                {
+                    AnimationInfo overlayAnimationInfo = _overlayAnimationInfo;
+
+                    if (animationInfo.State != AnimationState.Visible)
+                    {
+                        overlayAnimationInfo = animationInfo;
+                    }
+
+                    _overlay.Redraw(gameTime, overlayAnimationInfo);
+                }
+            }
         }
 
         public virtual void Draw(GameTime gameTime, AnimationInfo animationInfo)
@@ -234,18 +292,11 @@ namespace Pages
                 viewportBounds = Superview.RectangleToSystem(viewportBounds);
             }
 
-            SpriteBatch.Draw(Load<Texture2D>("Rectangle"), viewportBounds, BackgroundColor * animationInfo.Value);
-
-            foreach (View subview in _subviews)
-            {
-                subview.Draw(gameTime, animationInfo);
-            }
-
-            if (_overlay != null)
-            {
-                _overlay.Draw(gameTime, _overlayAnimationInfo);
-            }
+            SpriteBatch.Draw(BackgroundTexture, viewportBounds, BackgroundColor * animationInfo.Value);
         }
+
+        public virtual void OverlayWillDimiss(View overlay)
+        { }
 
         public virtual void OverlayDimissed(View overlay)
         { }
@@ -256,6 +307,24 @@ namespace Pages
             {
                 return Color.Black;
             }
+        }
+
+        public virtual bool BackButtonPressed()
+        {
+            if (_overlay != null && _overlay.BackButtonPressed())
+            {
+                return true;
+            }
+
+            foreach (View subview in _subviews)
+            {
+                if (subview.BackButtonPressed())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion
@@ -366,7 +435,7 @@ namespace Pages
 
         #region Overlay
 
-        public void Overlay(View overlay, bool animated)
+        public void ShowOverlay(View overlay, bool animated)
         {
             initializeView(overlay);
             overlay.LoadContent();
@@ -383,8 +452,20 @@ namespace Pages
             }
         }
 
+        private void doDismissOverlay()
+        {
+            View overlay = _overlay;
+
+            _overlay = null;
+            _overlayAnimationInfo = null;
+
+            OverlayDimissed(overlay);
+        }
+
         private void dismissOverlay(bool animated)
         {
+            OverlayWillDimiss(_overlay);
+
             if (animated)
             {
                 if (_overlayAnimationInfo.State == AnimationState.Visible)
@@ -398,9 +479,7 @@ namespace Pages
             }
             else
             {
-                OverlayDimissed(_overlay);
-                _overlay = null;
-                _overlayAnimationInfo = null;
+                doDismissOverlay();
             }
         }
 

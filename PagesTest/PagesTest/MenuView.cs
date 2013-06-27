@@ -63,7 +63,7 @@ namespace PagesTest
             _overlayButton.Font = Load<SpriteFont>("TestFont");
             _overlayButton.AutoResize = false;
             _overlayButton.BackgroundColor = Color.Blue;
-            _overlayButton.Tap += showOveray;
+            _overlayButton.Tap += showTheOverlay;
 
             updateProgressBar();
         }
@@ -89,6 +89,7 @@ namespace PagesTest
             _overlayButton.Height = 200;
             _overlayButton.Width = 200;
 
+            _progressBar.Progress = Game1Settings.Progress;
             _progressBar.Y = 100;
             _progressBar.X = 100;
             _progressBar.Height = 20;
@@ -105,6 +106,8 @@ namespace PagesTest
             {
                 _progressBar.Progress = _progressBar.Progress + .1f;
             }
+
+            Game1Settings.Progress = _progressBar.Progress;
             
             NavigationController.PerformActionAfterDelay(updateProgressBar, TimeSpan.FromMilliseconds(500));
         }
@@ -119,9 +122,9 @@ namespace PagesTest
             NavigationController.Navigate(new InfoView(), false);
         }
 
-        void showOveray(object sender)
+        void showTheOverlay(object sender)
         {
-            Overlay(new Overlay(), true);
+            ShowOverlay(new Overlay(), true);
         }
     }
 }
