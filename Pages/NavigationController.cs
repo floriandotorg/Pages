@@ -256,7 +256,7 @@ namespace Pages
             {
                 _touching = true;
 
-                if (_navigationStack.Peek().TouchInside(touches.First()))
+                if (_navigationStack.Peek().Visible && _navigationStack.Peek().TouchInside(touches.First()))
                 {
                     _navigationStack.Peek().TouchDown(touches.First());
                 }

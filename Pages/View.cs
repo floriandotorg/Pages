@@ -38,6 +38,50 @@ namespace Pages
             }
         }
 
+        public Rectangle Bounds
+        {
+            get
+            {
+                return Viewport.Bounds;
+            }
+            set
+            {
+                Viewport viewport = Viewport;
+                viewport.Bounds = value;
+                Viewport = viewport;
+            }
+        }
+
+        public Point Position
+        {
+            get
+            {
+                return new Point(Viewport.X, Viewport.Y);
+            }
+            set
+            {
+                Viewport viewport = Viewport;
+                viewport.X = value.X;
+                viewport.Y = value.Y;
+                Viewport = viewport;
+            }
+        }
+
+        public Point Size
+        {
+            get
+            {
+                return new Point(Viewport.Width, Viewport.Height);
+            }
+            set
+            {
+                Viewport viewport = Viewport;
+                viewport.Width = value.X;
+                viewport.Height = value.Y;
+                Viewport = viewport;
+            }
+        }
+
         public int Height
         {
             get
@@ -158,7 +202,7 @@ namespace Pages
 
         private List<View> _subviews;
         private View _overlay;
-        private AnimationInfo _overlayAnimationInfo;
+        public AnimationInfo OverlayAnimationInfo;
 
         #region Game Interface
 
@@ -172,7 +216,10 @@ namespace Pages
 
         public virtual void LoadContent()
         {
-            BackgroundTexture = Load<Texture2D>("Rectangle");
+            if (BackgroundTexture == null)
+            {
+                BackgroundTexture = Load<Texture2D>("Rectangle");
+            }
 
             foreach (View subview in _subviews)
             {
@@ -228,18 +275,18 @@ namespace Pages
 
             if (_overlay != null)
             {
-                if (_overlayAnimationInfo.State == AnimationState.FadeIn && _overlayAnimationInfo.Value.Inc())
+                if (OverlayAnimationInfo.State == AnimationState.FadeIn && OverlayAnimationInfo.Value.Inc())
                 {
-                    _overlayAnimationInfo.State = AnimationState.Visible;
+                    OverlayAnimationInfo.State = AnimationState.Visible;
                 }
-                else if (_overlayAnimationInfo.State == AnimationState.FadeOut && _overlayAnimationInfo.Value.Dec())
+                else if (OverlayAnimationInfo.State == AnimationState.FadeOut && OverlayAnimationInfo.Value.Dec())
                 {
                     doDismissOverlay();
                 }
 
                 if (_overlay != null)
                 {
-                    AnimationInfo overlayAnimationInfo = _overlayAnimationInfo;
+                    AnimationInfo overlayAnimationInfo = OverlayAnimationInfo;
 
                     if (animationInfo.State != AnimationState.Visible)
                     {
@@ -271,7 +318,7 @@ namespace Pages
 
                 if (_overlay != null)
                 {
-                    AnimationInfo overlayAnimationInfo = _overlayAnimationInfo;
+                    AnimationInfo overlayAnimationInfo = OverlayAnimationInfo;
 
                     if (animationInfo.State != AnimationState.Visible)
                     {
@@ -361,14 +408,14 @@ namespace Pages
 
         public virtual bool TouchDown(TouchLocation location)
         {
-            if (_overlay != null && _overlay.TouchInside(location) && _overlay.TouchDown(location))
+            if (_overlay != null && _overlay.Visible && _overlay.TouchInside(location) && _overlay.TouchDown(location))
             {
                 return true;
             }
             
             foreach (View subview in _subviews)
             {
-                if (subview.TouchInside(location) && subview.TouchDown(location))
+                if (subview.Visible && subview.TouchInside(location) && subview.TouchDown(location))
                 {
                     return true;
                 }
@@ -443,12 +490,12 @@ namespace Pages
 
             if (animated)
             {
-                _overlayAnimationInfo = new AnimationInfo();
+                OverlayAnimationInfo = new AnimationInfo();
             }
             else
             {
-                _overlayAnimationInfo = new AnimationInfo();
-                _overlayAnimationInfo.Visible();
+                OverlayAnimationInfo = new AnimationInfo();
+                OverlayAnimationInfo.Visible();
             }
         }
 
@@ -457,7 +504,7 @@ namespace Pages
             View overlay = _overlay;
 
             _overlay = null;
-            _overlayAnimationInfo = null;
+            OverlayAnimationInfo = null;
 
             OverlayDimissed(overlay);
         }
@@ -468,9 +515,9 @@ namespace Pages
 
             if (animated)
             {
-                if (_overlayAnimationInfo.State == AnimationState.Visible)
+                if (OverlayAnimationInfo.State == AnimationState.Visible)
                 {
-                    _overlayAnimationInfo.FadeOut();
+                    OverlayAnimationInfo.FadeOut();
                 }
                 else
                 {

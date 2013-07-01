@@ -82,30 +82,33 @@ namespace Pages
         public override void Draw(GameTime gameTime, AnimationInfo animationInfo)
         {
             base.Draw(gameTime, animationInfo);
-            
-            Vector2 textSize = Font.MeasureString(Text);
 
-            Vector2 position = new Vector2(0, 0);
+            if (!String.IsNullOrEmpty(Text) && Font != null)
+            {
+                Vector2 textSize = Font.MeasureString(Text);
 
-            if (HorizontalAlignment == HorizontalAlignment.Center)
-            {
-                position.X = (Viewport.Width - textSize.X) / 2;
-            }
-            else if (HorizontalAlignment == HorizontalAlignment.Right)
-            {
-                position.X = Viewport.Width - textSize.X;
-            }
+                Vector2 position = new Vector2(0, 0);
 
-            if (VerticalAlignment == VerticalAlignment.Center)
-            {
-                position.Y = (Viewport.Height - textSize.Y) / 2;
-            }
-            else if (VerticalAlignment == VerticalAlignment.Bottom)
-            {
-                position.Y = Viewport.Height - textSize.Y;
-            }
+                if (HorizontalAlignment == HorizontalAlignment.Center)
+                {
+                    position.X = (Viewport.Width - textSize.X) / 2;
+                }
+                else if (HorizontalAlignment == HorizontalAlignment.Right)
+                {
+                    position.X = Viewport.Width - textSize.X;
+                }
 
-            SpriteBatch.DrawString(Font, Text, Vector2ToSystem(position), Color * animationInfo.Value);
+                if (VerticalAlignment == VerticalAlignment.Center)
+                {
+                    position.Y = (Viewport.Height - textSize.Y) / 2;
+                }
+                else if (VerticalAlignment == VerticalAlignment.Bottom)
+                {
+                    position.Y = Viewport.Height - textSize.Y;
+                }
+
+                SpriteBatch.DrawString(Font, Text, Vector2ToSystem(position), Color * animationInfo.Value);
+            }
         }
     }
 }

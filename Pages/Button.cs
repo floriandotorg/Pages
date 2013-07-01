@@ -19,7 +19,7 @@ namespace Pages
 
         public override bool TouchDown(TouchLocation location)
         {
-            if (!base.TouchDown(location))
+            if (!base.TouchDown(location) && Tap != null)
             {
                 Tap(this);
             }
