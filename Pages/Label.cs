@@ -87,7 +87,7 @@ namespace Pages
             {
                 Vector2 textSize = Font.MeasureString(Text);
 
-                Vector2 position = new Vector2(0, 0);
+                Vector2 position = Vector2.Zero;
 
                 if (HorizontalAlignment == HorizontalAlignment.Center)
                 {

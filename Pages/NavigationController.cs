@@ -164,7 +164,7 @@ namespace Pages
 
         virtual public void Draw(GameTime gameTime)
         {
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             _navigationStack.Peek().Redraw(gameTime, _animationInfo);
 

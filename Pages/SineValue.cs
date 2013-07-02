@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace Pages
 {
@@ -42,8 +43,6 @@ namespace Pages
         private double _inc;
         private ProgressMode _mode;
 
-        private const double PI_2 = Math.PI / 2.0;
-
         public double Value
         {
             get
@@ -75,7 +74,7 @@ namespace Pages
         {
             get
             {
-                return _sineValue >= PI_2;
+                return _sineValue >= MathHelper.PiOver2;
             }
         }
 
@@ -90,14 +89,14 @@ namespace Pages
         public SineValue(double max, int steps)
         {
             _max = max;
-            _inc = PI_2 / (double)steps;
+            _inc = MathHelper.PiOver2 / (double)steps;
             _sineValue = 0;
             Mode = ProgressMode.SteepBeginSoftEnd;
         }
 
         public bool Inc()
         {
-            _sineValue = Math.Min(_sineValue + _inc, PI_2);
+            _sineValue = Math.Min(_sineValue + _inc, MathHelper.PiOver2);
             return IsMax;
         }
 
@@ -109,7 +108,7 @@ namespace Pages
 
         public void setMax()
         {
-            _sineValue = PI_2;
+            _sineValue = MathHelper.PiOver2;
         }
 
         public void setMin()
@@ -121,7 +120,7 @@ namespace Pages
         {
             get
             {
-                return _sineValue / PI_2;
+                return _sineValue / MathHelper.PiOver2;
             }
         }
     }
