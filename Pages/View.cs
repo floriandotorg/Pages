@@ -342,10 +342,10 @@ namespace Pages
             SpriteBatch.Draw(BackgroundTexture, viewportBounds, BackgroundColor * animationInfo.Value);
         }
 
-        public virtual void OverlayWillDimiss(View overlay)
+        public virtual void OverlayWillDismiss(View overlay)
         { }
 
-        public virtual void OverlayDimissed(View overlay)
+        public virtual void OverlayDismissed(View overlay)
         { }
 
         public virtual Color ClearColor
@@ -506,22 +506,18 @@ namespace Pages
             _overlay = null;
             OverlayAnimationInfo = null;
 
-            OverlayDimissed(overlay);
+            OverlayDismissed(overlay);
         }
 
         private void dismissOverlay(bool animated)
         {
-            OverlayWillDimiss(_overlay);
+            OverlayWillDismiss(_overlay);
 
             if (animated)
             {
                 if (OverlayAnimationInfo.State == AnimationState.Visible)
                 {
                     OverlayAnimationInfo.FadeOut();
-                }
-                else
-                {
-                    throw new InvalidOperationException();
                 }
             }
             else
@@ -535,10 +531,6 @@ namespace Pages
             if (Superview != null)
             {
                 Superview.dismissOverlay(animated);
-            }
-            else
-            {
-                throw new InvalidOperationException();
             }
         }
 

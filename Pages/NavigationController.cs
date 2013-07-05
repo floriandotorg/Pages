@@ -23,6 +23,7 @@ namespace Pages
         private Dictionary<String, Object> _assetDictionary;
         private AnimationInfo _animationInfo;
         private View _navigateView;
+        private bool _navigateSwitchTo;
 
         private struct Timer
         {
@@ -195,7 +196,11 @@ namespace Pages
 
         public void Back(bool animated)
         {
-            if (_animationInfo.State == AnimationState.Visible)
+            if (_navigationStack.Count == 1)
+            {
+                Exit();
+            }
+            else if (_animationInfo.State == AnimationState.Visible)
             {
                 _animationInfo.FadeOut();
                 _navigateView = null;
@@ -206,9 +211,28 @@ namespace Pages
                     _navigationStack.Pop();
                 }
             }
-            else
+        }
+
+        public void SwitchTo(View view, bool animated)
+        {
+            if (_animationInfo.State != AnimationState.FadeOut)
             {
-                throw new InvalidOperationException();
+                _animationInfo.Value.setMax();
+
+                initializeView(view);
+                view.LoadContent();
+                _navigateView = view;
+                _navigateSwitchTo = true;
+
+                if (animated)
+                {
+                    _animationInfo.FadeOut();
+                }
+                else
+                {
+                    _animationInfo.State = AnimationState.Visible;
+                    doNavigate();
+                }
             }
         }
 
@@ -221,6 +245,7 @@ namespace Pages
                 initializeView(view);
                 view.LoadContent();
                 _navigateView = view;
+                _navigateSwitchTo = false;
 
                 if (animated)
                 {
@@ -232,14 +257,15 @@ namespace Pages
                     doNavigate();
                 }
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
         }
 
         private void doNavigate()
         {
+            if (_navigateSwitchTo)
+            {
+                _navigationStack.Pop();
+            }
+
             _navigationStack.Push(_navigateView);
             _navigateView = null;
         }
