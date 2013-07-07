@@ -10,13 +10,18 @@ namespace Pages
     {
         private static GameSettings<T> _instance;
 
+        private static void Renew()
+        {
+            _instance = new T();
+        }
+
         private static GameSettings<T> Instance
         {
             get 
             {
                 if (_instance == null)
                 {
-                    _instance = new T();
+                    Renew();
                 }
 
                 return _instance;
@@ -27,17 +32,41 @@ namespace Pages
 
         protected GameSettings()
         {
-            Initialize();
+            try
+            {
+                Initialize();
+            }
+            catch
+            {
+                _applicationSettings.Clear();
+                Initialize();
+            }
         }
 
         protected static Object Get(string key)
         {
-            return Instance._applicationSettings[key];
+            try
+            {
+                return Instance._applicationSettings[key];
+            }
+            catch
+            {
+                Renew();
+                return Instance._applicationSettings[key];
+            }
         }
 
         protected static void Set(string key, Object value)
         {
-            Instance._applicationSettings[key] = value;
+            try
+            {
+                Instance._applicationSettings[key] = value;
+            }
+            catch
+            {
+                Renew();
+                Instance._applicationSettings[key] = value;
+            }
         }
 
         protected void AddSetting(string key, Object defaultValue)

@@ -10,8 +10,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagesTest", "PagesTest\Page
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagesTestContent", "PagesTest\PagesTestContent\PagesTestContent.contentproj", "{259F332E-427F-4D9C-AFE6-EC953227C85F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{65E4BDCF-706A-416B-B597-80738AC5DE86}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -60,26 +58,6 @@ Global
 		{259F332E-427F-4D9C-AFE6-EC953227C85F}.Release|Mixed Platforms.ActiveCfg = Release|Windows Phone
 		{259F332E-427F-4D9C-AFE6-EC953227C85F}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
 		{259F332E-427F-4D9C-AFE6-EC953227C85F}.Release|x86.ActiveCfg = Release|Windows Phone
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Debug|ARM.ActiveCfg = Debug|ARM
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Debug|ARM.Build.0 = Debug|ARM
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Debug|ARM.Deploy.0 = Debug|ARM
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Debug|Mixed Platforms.Deploy.0 = Debug|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Debug|Windows Phone.ActiveCfg = Debug|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Debug|x86.ActiveCfg = Debug|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Debug|x86.Build.0 = Debug|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Debug|x86.Deploy.0 = Debug|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Release|ARM.ActiveCfg = Release|ARM
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Release|ARM.Build.0 = Release|ARM
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Release|ARM.Deploy.0 = Release|ARM
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Release|Mixed Platforms.Build.0 = Release|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Release|Mixed Platforms.Deploy.0 = Release|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Release|Windows Phone.ActiveCfg = Release|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Release|x86.ActiveCfg = Release|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Release|x86.Build.0 = Release|x86
-		{65E4BDCF-706A-416B-B597-80738AC5DE86}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
