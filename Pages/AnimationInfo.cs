@@ -37,14 +37,14 @@ namespace Pages
         {
             State = AnimationState.FadeIn;
             Value.setMin();
-            Value.Mode = ProgressMode.SteepBeginSoftEnd;
+            Value.Mode = ProgressMode.SoftBeginSteepEnd;
         }
 
         public void FadeOut()
         {
             State = AnimationState.FadeOut;
             Value.setMax();
-            Value.Mode = ProgressMode.SoftBeginSteepEnd;
+            Value.Mode = ProgressMode.SteepBeginSoftEnd;
         }
 
         public void Visible()

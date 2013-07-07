@@ -47,14 +47,18 @@ namespace Pages
         {
             get
             {
+                double result = 0;
+
                 if (Mode == ProgressMode.SoftBeginSteepEnd)
                 {
-                    return _max * (1 - Math.Cos(_sineValue));
+                    result = _max * (1 - Math.Cos(_sineValue));
                 }
                 else
                 {
-                    return _max * Math.Sin(_sineValue);
+                    result = _max * Math.Sin(_sineValue);
                 }
+
+                return Math.Min(_max, Math.Max(0, result));
             }
 
             set

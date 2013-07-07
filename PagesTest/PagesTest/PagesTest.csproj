@@ -58,7 +58,8 @@
     <Reference Include="Microsoft.Xna.Framework.GamerServices" />
     <Reference Include="Microsoft.Xna.Framework.Input.Touch" />
     <Reference Include="mscorlib" />
-    <Reference Include="Pages">
+    <Reference Include="Pages, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Pages.dll</HintPath>
     </Reference>
     <Reference Include="System" />
